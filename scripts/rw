@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Check if a filename argument is provided
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <filename>"
+  exit 1
+fi
+
+FILE=~/voice_biomarker/src/"$1"
+
+# Remove the file and open it in nano
+rm "$FILE" && nano "$FILE"

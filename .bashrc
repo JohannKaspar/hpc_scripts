@@ -9,54 +9,23 @@ fi
 # export SYSTEMD_PAGER=
 
 # User specific aliases and functions
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/etc/profile.d/conda.sh" ]; then
-        . "/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/etc/profile.d/conda.sh"
-    else
-        export PATH="/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-
-if [ -f "/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/etc/profile.d/mamba.sh" ]; then
-    . "/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/etc/profile.d/mamba.sh"
-fi
-# <<< conda initialize <<<
-
-#alias srun_std="srun --time=12:00:00 --mem=16G --cpus-per-task=16 --pty bash -i"
-#alias srun_std64="srun --time=12:00:00 --mem=64G --cpus-per-task=64 --pty bash -i"
 alias srun_gpu="srun --mem=16G --cpus-per-task=16 --gres=gpu:tesla:1 -p gpu --time=12:00:00 --pty bash -i"
 alias start_jup="~/scripts/start_jupyter.sh"
-alias train_model="sbatch ~/slurm_scripts/train_voice_model.sbatch"
-alias tune_hyperparam="sbatch ~/slurm_scripts/hyper_parameter_tuning.sbatch"
-alias debug_hyper="sbatch ~/slurm_scripts/debug_hyper.sbatch  --num_experiments 5 --num_data_samples 2560 --epochs 5 --grace_period 2"
 
 alias latest_log='cat $(ls -t ~/work/logs/*.log | head -n 1)'
 alias latest_err='cat $(ls -t ~/work/logs/*.err | head -n 1)'
 alias vb='cd ~/voice_biomarker'
-alias wav2vec='cd ~/voice_biomarker/experiments/wav2vec2'
 alias watch_log='tail -f $(ls -t ~/work/logs/*.log | head -n 1)'
 alias watch_err='tail -f $(ls -t ~/work/logs/*.err | head -n 1)'
-
 alias activate="source ~/work/.venv_voice_biomarker_new/bin/activate"
-alias workon_vb="cd ~/voice_biomarker && activate"
 alias sync_aufnahmen="~/scripts/sync_aufnahmen.sh"
 alias group_work="cd /data/cephfs-1/work/groups/mittermaier"
-#alias uv_run_slurm="sbatch ~/slurm_scripts/uv_run.slurm"
-#alias uv_run_slurm64="sbatch ~/slurm_scripts/uv_run64.slurm"
 alias train="uv run src/train.py"
 alias upload="~/scripts/upload_outputs.sh"
 alias config='git --git-dir=$HOME/.cfg.git/ --work-tree=$HOME'
 
 export PATH=$PATH:~/bin:~/scripts
 export UV_PROJECT_ENVIRONMENT="/data/cephfs-1/home/users/joli13_c/work/.venv_voice_biomarker_new"
-export PATH=/data/cephfs-1/work/groups/mittermaier/users/joli13_c/miniforge/bin:$PATH
 export PYTHONPATH="/data/cephfs-1/home/users/joli13_c/voice_biomarker:$PYTHONPATH"
 
 function stimmaufnahmen {
@@ -132,7 +101,7 @@ uv_slurm() {
     echo "  Script:         $1"
     echo "  Additional args: ${*:2}"
 
-    sbatch --mem="$MEM" --cpus-per-task="$CPUS" ~/slurm_scripts/uv_run.slurm "$@"
+    sbatch --mem="$MEM" --cpus-per-task="$CPUS" ~/scripts/uv_run.slurm "$@"
 }
 
 srun_std() {

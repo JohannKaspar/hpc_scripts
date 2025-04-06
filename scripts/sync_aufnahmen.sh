@@ -61,4 +61,31 @@ done
 cd /data/cephfs-1/home/users/joli13_c/voice_biomarker
 uv run src/utils/extract_metadata.py -d "$TARGET_DIR"
 
+# Step 6: Update paths in config files (config.yml and config_debug.yml)
+
+CONFIG_FILES=(
+  "/data/cephfs-1/home/users/joli13_c/voice_biomarker/config.yml"
+  "/data/cephfs-1/home/users/joli13_c/voice_biomarker/config_debug.yml"
+)
+
+cd /data/cephfs-1/work/groups/mittermaier/stimmaufnahmen || exit 1
+latest_dates=($(ls -d 202* | sort -r | head -n 2))
+
+NEW_DATE="${latest_dates[0]}"
+OLD_DATE="${latest_dates[1]}"
+
+for file in "${CONFIG_FILES[@]}"; do
+  echo "Updating $file from $OLD_DATE to $NEW_DATE..."
+  sed -i \
+    -e "s|stimmaufnahmen/$OLD_DATE|stimmaufnahmen/$NEW_DATE|g" \
+    -e "s|wav2vec2_$OLD_DATE|wav2vec2_$NEW_DATE|g" \
+    -e "s|parselmouth_$OLD_DATE|parselmouth_$NEW_DATE|g" \
+    "$file"
+done
+
+echo "Config files updated."
+
+uv_slurm 16G 16 src/features/parselmouth_extractor.py
+uv_slurm 32G 16 src/features/get_embeddings.py
+
 echo "Done!"

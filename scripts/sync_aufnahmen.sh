@@ -5,6 +5,7 @@
 
 # Define the target directory based on the current date
 TARGET_DIR="/data/cephfs-1/work/groups/mittermaier/stimmaufnahmen/$(date +%Y-%m-%d)"
+mkdir $TARGET_DIR
 
 # Step 1: Move files from SharePoint to the target directory
 echo "Moving files from SharePoint to $TARGET_DIR..."
@@ -58,14 +59,14 @@ done
 ' _ {} +
 
 # (Optional) Step 5: Run your Python scripts (metadata extraction, config building, etc.)
-cd /data/cephfs-1/home/users/joli13_c/voice_biomarker
+cd $HOME/voice_biomarker
 uv run src/utils/extract_metadata.py -d "$TARGET_DIR"
 
 # Step 6: Update paths in config files (config.yml and config_debug.yml)
 
 CONFIG_FILES=(
-  "/data/cephfs-1/home/users/joli13_c/voice_biomarker/config.yml"
-  "/data/cephfs-1/home/users/joli13_c/voice_biomarker/config_debug.yml"
+  "$HOME/voice_biomarker/config.yml"
+  "$HOME/voice_biomarker/config_debug.yml"
 )
 
 cd /data/cephfs-1/work/groups/mittermaier/stimmaufnahmen || exit 1
@@ -85,7 +86,8 @@ done
 
 echo "Config files updated."
 
-uv_slurm 16G 16 src/features/parselmouth_extractor.py
+source $HOME/.bashrc
+uv_slurm 48G 16 src/features/parselmouth_extractor.py
 uv_slurm 32G 16 src/features/get_embeddings.py
 
 echo "Done!"
